@@ -62,7 +62,10 @@ public class DecoderFirst extends AppCompatActivity implements QRCodeReaderView.
                 switch (which) {
                     case 0:
                         Toast.makeText(getApplicationContext(), "Пуши отправлены", Toast.LENGTH_LONG).show();
-
+                        UserStatus userStatus = new UserStatus();
+                        userStatus.status = true;
+                        myRef.child("/push_bill_liza").setValue(userStatus);
+                        myRef.child("/push_bill_zhena").setValue(userStatus);
                     }
                 }
             });
@@ -82,7 +85,6 @@ public class DecoderFirst extends AppCompatActivity implements QRCodeReaderView.
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
 
-        myRef.setValue("Hello, World!");
     }
 
 
