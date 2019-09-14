@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "75924794633",
+    "firebase_url": "https://vtbhack-72089.firebaseio.com",
+    "project_id": "vtbhack-72089",
+    "storage_bucket": "vtbhack-72089.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75924794633:android:6e8da2ec6efb9a24b3b7d8",
+        "android_client_info": {
+          "package_name": "com.example.vtb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "75924794633-lq1p2atfg8qfpte57nd1d7oe4lt4sb5e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vtb",
+            "certificate_hash": "2c0c5db4e0a5219cef9fb06552b811eaee0ac41e"
+          }
+        },
+        {
+          "client_id": "75924794633-5lieaepepp0b2p4gvb55moen18nu3vh9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnAeuQADVLHYvNns_5pVuMhEV3ZXAoIP0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "75924794633-5lieaepepp0b2p4gvb55moen18nu3vh9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
