@@ -20,9 +20,9 @@ def patent():
     except Exception as err:
         raise ValueError("Smth wrong with import image!")
     # print()
-    a = type(imagefile)
-    # extractedInformation = pytesseract.image_to_string(Image.open('/home/evgeniy/Pictures/keys.jpg'))
-    return  imagefile+'CV is all you need!, look: '# + extractedInformation
+    #a = type(imagefile)
+    extractedInformation = pytesseract.image_to_string(imgefile)
+    return  extractedInformation
 
 
     # import random
