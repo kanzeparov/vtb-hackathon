@@ -100,16 +100,38 @@ public class DecoderFirst extends AppCompatActivity implements QRCodeReaderView.
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
         myRef.child("items").setValue(null);
         User user = new User();
-        user.name = "Хлеб";
+        user.name = "Капучино";
         user.owner = "";
-        user.price = 50;
+        user.price = 65;
         addData(user,0);
 
         User user1 = new User();
-        user1.name = "Сок";
+        user1.name = "Вестрн Гурме";
         user1.owner = "";
-        user1.price = 50;
+        user1.price = 219;
         addData(user1,1);
+
+        user.name = "Двойной чизбургер";
+        user.owner = "";
+        user.price = 125;
+        addData(user,2);
+
+        user1.name = "Латте";
+        user1.owner = "";
+        user1.price = 104;
+        addData(user1,3);
+
+        user.name = "Пирожок вишневый";
+        user.owner = "";
+        user.price = 50;
+        addData(user,4);
+
+        user1.name = "Чизбургер";
+        user1.owner = "";
+        user1.price = 55;
+        addData(user1,5);
+
+
 
         Intent intent = new Intent(DecoderFirst.this, ShareActivity.class);
         intent.putExtra("text",text);

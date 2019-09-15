@@ -7,7 +7,14 @@
     android:orientation="vertical"
     android:layout_weight="10"
     tools:context=".ListOfAllActivity">
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="8"
+        android:gravity="center"
+        android:layout_margin="5dp"
+        android:text="Общий счет"
+        android:textSize="25dp"></TextView>
     <ListView
         android:id="@+id/listView1"
         android:layout_margin="25dp"
@@ -24,6 +31,7 @@
         android:layout_height="match_parent"
         android:text="Send"
         android:id="@+id/send"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_weight="8"></Button>
 
 </LinearLayout>

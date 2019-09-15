@@ -25,13 +25,13 @@ public class Data {
     private String payer;
     @SerializedName("state")
     @Expose
-    private Integer state;
+    private Long state;
     @SerializedName("created")
     @Expose
-    private Integer created;
+    private Long created;
     @SerializedName("updated")
     @Expose
-    private Integer updated;
+    private Long updated;
     @SerializedName("owner")
     @Expose
     private String owner;
@@ -87,27 +87,27 @@ public class Data {
         this.payer = payer;
     }
 
-    public Integer getState() {
+    public Long getState() {
         return state;
     }
 
-    public void setState(Integer state) {
+    public void setState(Long state) {
         this.state = state;
     }
 
-    public Integer getCreated() {
+    public Long getCreated() {
         return created;
     }
 
-    public void setCreated(Integer created) {
+    public void setCreated(Long created) {
         this.created = created;
     }
 
-    public Integer getUpdated() {
+    public Long getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Integer updated) {
+    public void setUpdated(Long updated) {
         this.updated = updated;
     }
 

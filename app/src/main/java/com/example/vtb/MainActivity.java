@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     String payerLiza = "3d6228c52429bbaee13bba8a91929c9f85cfba42";
     String payerZhena = "938666ac50e9c290ccb04b7a42e936e809e2d50a";
     private String sessionIdString = "";
+    TextView dolg;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,17 +48,20 @@ public class MainActivity extends AppCompatActivity {
         initFirebase();
         addEventFirebaseListener();
         final TextView textView = findViewById(R.id.balance);
-        TextView dolg = findViewById(R.id.moidolg);
+        dolg = findViewById(R.id.moidolg);
 
         Button button = findViewById(R.id.button);
 
-        Intent intent = getIntent();
-            if(intent.getIntExtra("Zhena",0) == 0 || intent.getIntExtra("Liza",0) == 0) {
-                dolg.setText("Женя должен " + (billZhena));
-            } else {
-            dolg.setText("Женя должен " + (billZhena+intent.getIntExtra("Zhena",0)) +
+
+
+        intent = getIntent();
+        if (intent.getIntExtra("Zhena", 0) == 0 && intent.getIntExtra("Liza", 0) == 0) {
+            dolg.setText("Женя должен " + (billZhena));
+            Toast.makeText(getApplicationContext(),"without",Toast.LENGTH_LONG).show();
+        } else {
+            dolg.setText("Женя должен " + (billZhena + intent.getIntExtra("Zhena", 0)) +
                     "\n" +
-                    "Лиза должна " + (intent.getIntExtra("Liza",0)));
+                    "Лиза должна " + (intent.getIntExtra("Liza", 0)));
             new Liza().execute();
         }
 
@@ -64,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         session.setDeviceType(1);
         session.setDeviceId("fewf");
         //startActivity(new Intent(ListOfAllActivity.this, DecoderSecond.class));
-        final HashMap<String,String> hashMap2 = new HashMap<>();
+        final HashMap<String, String> hashMap2 = new HashMap<>();
         NetworkService.getInstance()
                 .getJSONApi().postUser(session)
                 .enqueue(new Callback<SessionId>() {
@@ -81,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onResponse(@NonNull Call<Balance> call, @NonNull Response<Balance> response) {
                                         Balance status = response.body();
-                                        if(textView != null )
+                                        if (textView != null)
                                             textView.setText(textView.getText().toString() + " " + status.getData().getTotal());
                                     }
 
@@ -97,9 +102,6 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-
-
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,10 +115,16 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
-                            case 0: Toast.makeText(getApplicationContext(), "Вы выбрали Лизу", Toast.LENGTH_LONG).show(); break;
-                            case 1:  Toast.makeText(getApplicationContext(), "Вы выбрали Женю", Toast.LENGTH_LONG).show();break;
-                            case 2:  {Toast.makeText(getApplicationContext(), "Вы выбрали Себя", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(MainActivity.this, ButtonsCamer.class));}
+                            case 0:
+                                Toast.makeText(getApplicationContext(), "Вы выбрали Лизу", Toast.LENGTH_LONG).show();
+                                break;
+                            case 1:
+                                Toast.makeText(getApplicationContext(), "Вы выбрали Женю", Toast.LENGTH_LONG).show();
+                                break;
+                            case 2: {
+                                Toast.makeText(getApplicationContext(), "Вы выбрали Себя", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(MainActivity.this, ButtonsCamer.class));
+                            }
                         }
                     }
                 });
@@ -124,11 +132,11 @@ public class MainActivity extends AppCompatActivity {
 // create and show the alert dialog
                 AlertDialog dialog = builder.create();
                 dialog.show();
-        }});
+            }
+        });
 
 
     }
-
 
 
     private void addEventFirebaseListener() {
@@ -139,6 +147,11 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 numberLiza = dataSnapshot.child("status_transaction_liza").getValue(TransStatus.class).number;
                 numberZhena = dataSnapshot.child("status_transaction_zhena").getValue(TransStatus.class).number;
+
+                if(dataSnapshot.child("status_transaction_liza").getValue(TransStatus.class).status == true) {
+                    dolg.setText("Женя должен " + (billZhena + intent.getIntExtra("Zhena", 0)));
+                }
+
             }
 
             @Override
@@ -168,77 +181,101 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            UserStatus transStatus = new UserStatus();
+            transStatus.status = false;
+            myRef.child("lizaalert").setValue(transStatus);
+            UserStatus transStatus1 = new UserStatus();
+            transStatus1.status = true;
+            myRef.child("lizaalert").setValue(transStatus1);
+            try {
+                Thread.sleep(30_000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             NetworkService.getInstance()
-                    .getJSONApi().getDataFromService(numberLiza, payerLiza)
+                    .getJSONApi().getDataFromService(numberLiza, payerRus)
                     .enqueue(new Callback<com.example.vtb.Status>() {
                         @Override
                         public void onResponse(@NonNull Call<com.example.vtb.Status> call, @NonNull Response<com.example.vtb.Status> response) {
                             com.example.vtb.Status status = response.body();
-                            if(status.getData().getState() == 5) {
-                                TransStatus transStatus = new TransStatus();
-                                transStatus.number = numberLiza;
-                                transStatus.status = true;
-                                myRef.child("status_transaction_liza").setValue(transStatus);
-                            }
+                            if (status != null)
+                                if (status.getData() != null)
+                                    if (status.getData().getState() == 5) {
+                                        TransStatus transStatus = new TransStatus();
+                                        transStatus.number = numberLiza;
+                                        transStatus.status = true;
+                                        myRef.child("status_transaction_liza").setValue(transStatus);
+                                    }
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<com.example.vtb.Status> call, @NonNull Throwable t) {
                         }
                     });
-            try{
-                Thread.sleep(60_000);
-            }catch (InterruptedException e){
+            transStatus = new UserStatus();
+            transStatus.status = false;
+            myRef.child("lizaalert").setValue(transStatus);
+            transStatus1 = new UserStatus();
+            transStatus1.status = true;
+            myRef.child("lizaalert").setValue(transStatus1);
+            try {
+                Thread.sleep(30_000);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             NetworkService.getInstance()
-                    .getJSONApi().getDataFromService(numberLiza, payerLiza)
+                    .getJSONApi().getDataFromService(numberLiza, payerRus)
                     .enqueue(new Callback<com.example.vtb.Status>() {
                         @Override
                         public void onResponse(@NonNull Call<com.example.vtb.Status> call, @NonNull Response<com.example.vtb.Status> response) {
                             com.example.vtb.Status status = response.body();
-                            if(status.getData().getState() == 5) {
-                                TransStatus transStatus = new TransStatus();
-                                transStatus.number = numberLiza;
-                                transStatus.status = true;
-                                myRef.child("status_transaction_liza").setValue(transStatus);
-                            }
+                            if (status != null)
+                                if (status.getData() != null)
+                                    if (status.getData().getState() == 5) {
+                                        TransStatus transStatus = new TransStatus();
+                                        transStatus.number = numberLiza;
+                                        transStatus.status = true;
+                                        myRef.child("status_transaction_liza").setValue(transStatus);
+                                    }
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<com.example.vtb.Status> call, @NonNull Throwable t) {
                         }
                     });
-            try{
-                Thread.sleep(60_000);
-            }catch (InterruptedException e){
+            transStatus = new UserStatus();
+            transStatus.status = false;
+            myRef.child("lizaalert").setValue(transStatus);
+            transStatus1 = new UserStatus();
+            transStatus1.status = true;
+            myRef.child("lizaalert").setValue(transStatus1);
+            myRef.child("lizaalert").setValue(transStatus1);
+            try {
+                Thread.sleep(30_000);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             NetworkService.getInstance()
-                    .getJSONApi().getDataFromService(numberLiza, payerLiza)
+                    .getJSONApi().getDataFromService(numberLiza, payerRus)
                     .enqueue(new Callback<com.example.vtb.Status>() {
                         @Override
                         public void onResponse(@NonNull Call<com.example.vtb.Status> call, @NonNull Response<com.example.vtb.Status> response) {
                             com.example.vtb.Status status = response.body();
-                            if(status.getData().getState() == 5) {
-                                TransStatus transStatus = new TransStatus();
-                                transStatus.number = numberLiza;
-                                transStatus.status = true;
-                                myRef.child("status_transaction_liza").setValue(transStatus);
-                            }
+                            if (status != null)
+                                if (status.getData() != null)
+                                    if (status.getData().getState() == 5) {
+                                        TransStatus transStatus = new TransStatus();
+                                        transStatus.number = numberLiza;
+                                        transStatus.status = true;
+                                        myRef.child("status_transaction_liza").setValue(transStatus);
+                                    }
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<com.example.vtb.Status> call, @NonNull Throwable t) {
                         }
                     });
-            try{
-                Thread.sleep(60_000);
-            }catch (InterruptedException e){
-                e.printStackTrace();
-            }
-
             return null;
         }
 
@@ -258,27 +295,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            NetworkService.getInstance()
-                    .getJSONApi().getDataFromService(numberZhena, payerZhena)
-                    .enqueue(new Callback<com.example.vtb.Status>() {
-                        @Override
-                        public void onResponse(@NonNull Call<com.example.vtb.Status> call, @NonNull Response<com.example.vtb.Status> response) {
-                            com.example.vtb.Status status = response.body();
-                            if(status.getData().getState() == 5) {
-                                TransStatus transStatus = new TransStatus();
-                                transStatus.number = numberZhena;
-                                transStatus.status = true;
-                                myRef.child("status_transaction_zhena").setValue(transStatus);
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(@NonNull Call<com.example.vtb.Status> call, @NonNull Throwable t) {
-                        }
-                    });
-            try{
+            try {
                 Thread.sleep(60_000);
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             NetworkService.getInstance()
@@ -287,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(@NonNull Call<com.example.vtb.Status> call, @NonNull Response<com.example.vtb.Status> response) {
                             com.example.vtb.Status status = response.body();
-                            if(status.getData().getState() == 5) {
+                            if (status.getData().getState() == 5) {
                                 TransStatus transStatus = new TransStatus();
                                 transStatus.number = numberZhena;
                                 transStatus.status = true;
@@ -299,9 +319,9 @@ public class MainActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Call<com.example.vtb.Status> call, @NonNull Throwable t) {
                         }
                     });
-            try{
+            try {
                 Thread.sleep(60_000);
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             NetworkService.getInstance()
@@ -310,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(@NonNull Call<com.example.vtb.Status> call, @NonNull Response<com.example.vtb.Status> response) {
                             com.example.vtb.Status status = response.body();
-                            if(status.getData().getState() == 5) {
+                            if (status.getData().getState() == 5) {
                                 TransStatus transStatus = new TransStatus();
                                 transStatus.number = numberZhena;
                                 transStatus.status = true;
@@ -322,9 +342,9 @@ public class MainActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Call<com.example.vtb.Status> call, @NonNull Throwable t) {
                         }
                     });
-            try{
+            try {
                 Thread.sleep(60_000);
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 

@@ -37,8 +37,8 @@ public class ListOfAllActivity extends AppCompatActivity {
     private ListView listview;
     ArrayList<User> list_users = new ArrayList<>();
     private String sessionIdString = "";
-    String payerLiza = "3d6228c52429bbaee13bba8a91929c9f85cfba42";
-    String payerRus = "7779b1db5db8017c8f4832ad5c8e9df4cad069d6";
+    String payerLiza = "b8a5752ef1a4b6891419905781272dc8becdf70c";
+    String payerRus = "9e625f46d2e04366220be01f2cd9550e07cddea4";
     String payerZhena = "938666ac50e9c290ccb04b7a42e936e809e2d50a";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +118,13 @@ public class ListOfAllActivity extends AppCompatActivity {
                             }
                         });
 
-
+                TransStatus transStatus = new TransStatus();
+                transStatus.number = numberLiza;
+                transStatus.status = false;
+                myRef.child("status_transaction_liza").setValue(transStatus);
+                transStatus.number = numberZhena;
+                transStatus.status = false;
+                myRef.child("status_transaction_zhena").setValue(transStatus);
 
                 Intent intent1 = new Intent(ListOfAllActivity.this, MainActivity.class);
                 intent1.putExtra("Zhena", billZhena);
